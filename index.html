@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indovina il Brand! – Intro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ════════════════════════════════════════════════════
+           RESET & VARIABILI  –  Game-show bright theme
+           ════════════════════════════════════════════════════ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --primary:      #1A1A2E;   /* quasi-nero per testi principali */
+            --accent:       #F7C948;   /* giallo game-show */
+            --accent-dark:  #E0A800;
+            --success:      #22C55E;
+            --success-bg:   #DCFCE7;
+            --warn:         #F97316;
+            --error:        #EF4444;
+            --bg:           #F2F2F7;   /* grigio iOS chiaro */
+            --surface:      #FFFFFF;
+            --surface-2:    #F8F8FC;
+            --text:         #1A1A2E;
+            --text-muted:   #6E6E8A;
+            --border:       #E2E2ED;
+            --r-sm:  8px;
+            --r-md:  14px;
+            --r-lg:  22px;
+            --shadow-card:  0 2px 12px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.06);
+            --shadow-lg:    0 8px 32px rgba(0,0,0,.12);
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        /* ════════════════════════════════════════════════════
+           SCREENS
+           ════════════════════════════════════════════════════ */
+        .screen { display: none; }
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            animation: fadeUp .3s ease both;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ════════════════════════════════════════════════════
+           ① WELCOME SCREEN
+           ════════════════════════════════════════════════════ */
+        #screen-welcome {
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .welcome-card {
+            background: var(--surface);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 44px 36px;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            /* bordo superiore colorato stile game-show */
+            border-top: 6px solid var(--accent);
+        }
+
+        .w-emoji { font-size: 4.2rem; display: block; margin-bottom: 14px; }
+
+        .w-title {
+            font-size: clamp(1.9rem, 6vw, 2.8rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--primary);
+            line-height: 1.05;
+            margin-bottom: 4px;
+        }
+        /* parola evidenziata gialla */
+        .w-title span {
+            color: var(--accent-dark);
+            position: relative;
+        }
+
+        .w-subtitle { color: var(--text-muted); font-size: .9rem; margin-bottom: 28px; }
+
+        /* Regole */
+        .rules {
+            list-style: none;
+            background: #FAFAFA;
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            padding: 14px 18px;
+            margin-bottom: 28px;
+            text-align: left;
+        }
+        .rules li {
+            padding: 6px 0;
+            font-size: 1rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .rules li span:first-child { flex-shrink: 0; font-size: 1.3rem; }
+
+        .field-label {
+            display: block;
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .09em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 13px 18px;
+            font-family: inherit;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text);
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--r-md);
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+            margin-bottom: 16px;
+        }
+        .input-field:focus {
+            border-color: var(--accent-dark);
+            box-shadow: 0 0 0 3px rgba(247,201,72,.22);
+        }
+        .input-field:disabled { opacity: .45; cursor: not-allowed; }
+
+        /* Bottoni */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 28px;
+            font-family: inherit;
+            font-size: .95rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            border: none;
+            border-radius: var(--r-md);
+            cursor: pointer;
+            transition: transform .15s, box-shadow .15s, filter .15s;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            width: 100%;
+        }
+        .btn:active:not(:disabled) { transform: scale(.96); }
+        .btn:disabled { opacity: .35; cursor: not-allowed; }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--primary);
+            box-shadow: 0 4px 0 var(--accent-dark), 0 6px 16px rgba(247,201,72,.35);
+        }
+        .btn-primary:hover:not(:disabled) {
+            filter: brightness(1.06);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 0 var(--accent-dark), 0 8px 20px rgba(247,201,72,.4);
+        }
+        .btn-primary:active:not(:disabled) {
+            box-shadow: 0 2px 0 var(--accent-dark);
+            transform: translateY(2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-muted);
+            border: 2px solid var(--border);
+            font-weight: 700;
+        }
+        .btn-outline:hover:not(:disabled) {
+            border-color: var(--text-muted);
+            background: var(--surface-2);
+        }
+
+        /* ════════════════════════════════════════════════════
+           ② GAME SCREEN
+           ════════════════════════════════════════════════════ */
+        #screen-game {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .game-header {
+            background: var(--primary);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 12px rgba(0,0,0,.2);
+        }
+
+        .game-logo-title {
+            font-weight: 900;
+            font-size: .95rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+
+        /* Timer */
+        .timer-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,.1);
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 100px;
+            padding: 5px 16px;
+            margin: 0 auto;
+        }
+        .timer-icon { font-size: .95rem; }
+        .timer-display {
+            font-weight: 900;
+            font-size: 1.4rem;
+            letter-spacing: .04em;
+            color: #FFFFFF;
+            min-width: 52px;
+            font-variant-numeric: tabular-nums;
+            transition: color .3s;
+        }
+        .timer-display.warn   { color: var(--warn); }
+        .timer-display.danger { color: #FF6B6B; animation: pulse .5s ease infinite alternate; }
+        @keyframes pulse { from { opacity: 1; } to { opacity: .4; } }
+
+        /* Score */
+        .score-wrap {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(34,197,94,.15);
+            border: 1px solid rgba(34,197,94,.3);
+            border-radius: 100px;
+            padding: 5px 14px;
+            white-space: nowrap;
+        }
+        .score-val { font-weight: 900; font-size: 1rem; color: #4ADE80; }
+        .score-lbl { font-size: .78rem; font-weight: 700; color: #4ADE80; opacity: .8; }
+
+        /* Sound toggle */
+        .btn-sound {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: opacity .2s;
+            flex-shrink: 0;
+        }
+        .btn-sound:hover { opacity: .6; }
+
+        /* Input zone */
+        .input-zone {
+            padding: 12px 20px;
+            background: var(--surface);
+            border-bottom: 2px solid var(--border);
+        }
+        .input-row { max-width: 900px; margin: 0 auto; position: relative; }
+
+        .game-input {
+            width: 100%;
+            padding: 13px 52px 13px 18px;
+            font-family: inherit;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text);
+            background: var(--surface-2);
+            border: 2px solid var(--border);
+            border-radius: 100px;   /* pill – stile quiz-show */
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .game-input::placeholder { color: var(--text-muted); font-weight: 400; }
+        .game-input:focus {
+            border-color: var(--accent-dark);
+            box-shadow: 0 0 0 3px rgba(247,201,72,.2);
+            background: var(--surface);
+        }
+        .game-input:disabled { opacity: .4; cursor: not-allowed; }
+
+        .input-hint {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: .78rem;
+            font-weight: 800;
+            color: var(--success);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .2s;
+        }
+        .input-hint.show { opacity: 1; }
+
+        .game-input.flash-ok {
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(34,197,94,.2);
+            animation: flashOk .3s ease both;
+        }
+        .game-input.flash-dup {
+            border-color: var(--warn);
+            box-shadow: 0 0 0 3px rgba(249,115,22,.18);
+            animation: flashOk .3s ease both;
+        }
+        @keyframes flashOk {
+            0%  { transform: scale(1); }
+            45% { transform: scale(1.015); }
+            100%{ transform: scale(1); }
+        }
+
+        /* Grid */
+        .grid-zone {
+            padding: 16px 20px 40px;
+            max-width: 960px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;                      /* occupa lo spazio rimanente */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;      /* centramento verticale */
+        }
+
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        /* ── Logo card ── */
+        .logo-card {
+            aspect-ratio: 1 / 1;
+            /* colore assegnato via JS */
+            background: #E8E8F0;
+            border-radius: var(--r-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 6px 7px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            transition: box-shadow .25s, transform .25s, border .25s;
+            border: 3px solid transparent;
+        }
+        .logo-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+
+        .logo-card img {
+            max-width: 86%;
+            max-height: 72%;
+            width: 86%;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+            pointer-events: none;
+        }
+
+        /* Nome brand – trasparente finché non indovinato */
+        .card-name {
+            font-size: .75rem;
+            font-weight: 800;
+            color: transparent;
+            text-align: center;
+            line-height: 1.2;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            transition: color .25s;
+            pointer-events: none;
+        }
+
+        /* Checkmark badge */
+        .card-check {
+            position: absolute;
+            top: 5px;
+            right: 6px;
+            font-size: .8rem;
+            opacity: 0;
+            transition: opacity .25s;
+        }
+
+        /* ── INDOVINATO: bordo bianco spesso + overlay leggero ── */
+        .logo-card.guessed {
+            border: 3px solid #FFFFFF;
+            box-shadow: 0 0 0 3px var(--success), var(--shadow-lg);
+            animation: popIn .4s cubic-bezier(.34,1.56,.64,1) both;
+        }
+        .logo-card.guessed .card-name  { color: rgba(0,0,0,.65); }
+        .logo-card.guessed .card-check { opacity: 1; }
+
+        /* ── MANCATO: de-saturato + nome in rosso ── */
+        .logo-card.missed {
+            filter: grayscale(.6) brightness(.85);
+            border-color: rgba(239,68,68,.5);
+            animation: revealMissed .35s ease both;
+        }
+        .logo-card.missed .card-name { color: var(--error); }
+
+        @keyframes popIn {
+            0%  { transform: scale(.8); }
+            65% { transform: scale(1.1); }
+            100%{ transform: scale(1); }
+        }
+        @keyframes revealMissed {
+            from { opacity: 0; transform: scale(.9); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        /* Banner game-over */
+        .game-over-banner {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--primary);
+            border-top: 4px solid var(--accent);
+            box-shadow: 0 -8px 40px rgba(0,0,0,.3);
+            padding: 18px 24px;
+            z-index: 20;
+        }
+        .game-over-banner.show { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+        .banner-msg { flex: 1; min-width: 160px; }
+        .banner-title { font-weight: 900; font-size: 1.1rem; color: #FFFFFF; }
+        .banner-sub   { font-size: .85rem; color: rgba(255,255,255,.6); margin-top: 2px; }
+        .banner-btn   { padding: 12px 28px; width: auto; flex-shrink: 0; }
+
+        /* ════════════════════════════════════════════════════
+           ③ RESULTS SCREEN
+           ════════════════════════════════════════════════════ */
+        #screen-results {
+            min-height: 100vh;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 32px 24px 48px;
+        }
+
+        .results-card {
+            background: var(--surface);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-lg);
+            border-top: 6px solid var(--accent);
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .result-hero { text-align: center; margin-bottom: 28px; }
+        .result-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+        .result-big {
+            font-size: clamp(3.5rem, 12vw, 5.5rem);
+            font-weight: 900;
+            line-height: 1;
+            color: var(--primary);
+        }
+        .result-label { color: var(--text-muted); font-size: .9rem; margin-top: 4px; }
+        .result-name  { font-weight: 800; font-size: 1.05rem; margin-top: 10px; color: var(--text); text-transform: uppercase; letter-spacing: .04em; }
+        .result-msg   { color: var(--text-muted); font-size: .88rem; margin-top: 6px; }
+
+        /* Stats */
+        .stats-row { display: flex; gap: 10px; margin-bottom: 24px; }
+        .stat-box {
+            flex: 1;
+            background: var(--bg);
+            border-radius: var(--r-md);
+            padding: 14px 10px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .stat-val { font-weight: 900; font-size: 1.7rem; color: var(--primary); }
+        .stat-lbl { font-size: .67rem; color: var(--text-muted); margin-top: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+
+        /* Brand indovinati – tags */
+        .section-title {
+            font-weight: 800;
+            font-size: .7rem;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+        .guessed-section { margin-bottom: 28px; }
+        .guessed-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .guessed-tag {
+            background: var(--success-bg);
+            color: #15803D;
+            border: 1px solid rgba(34,197,94,.3);
+            font-size: .78rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 100px;
+        }
+        .none-tag { color: var(--text-muted); font-size: .85rem; }
+
+        /* Brand mancati con curiosità */
+        .missed-section { margin-bottom: 28px; }
+        .missed-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .missed-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #FFF5F5;
+            border: 1px solid rgba(239,68,68,.18);
+            border-radius: var(--r-md);
+            padding: 12px 14px;
+        }
+        .missed-card-logo {
+            width: 52px;
+            height: 52px;
+            flex-shrink: 0;
+            background: #fff;
+            border-radius: var(--r-sm);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .missed-card-logo img {
+            max-width: 88%;
+            max-height: 88%;
+            object-fit: contain;
+        }
+        .missed-card-body { flex: 1; min-width: 0; }
+        .missed-card-name {
+            font-weight: 800;
+            font-size: .9rem;
+            color: var(--error);
+            margin-bottom: 3px;
+        }
+        .missed-card-fact {
+            font-size: .8rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        .btn-stack { display: flex; flex-direction: column; gap: 10px; }
+
+
+        /* ════════════════════════════════════════════════════
+           RESPONSIVE
+           ════════════════════════════════════════════════════ */
+        @media (max-width: 700px) {
+            .logo-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+            .game-logo-title { display: none; }
+        }
+        @media (max-width: 480px) {
+            .logo-grid { grid-template-columns: repeat(3, 1fr); gap: 7px; }
+            .grid-zone { padding: 12px 12px 100px; }
+            .input-zone { padding: 10px 12px; }
+            .results-card { padding: 28px 18px; }
+            .stats-row { gap: 8px; }
+        }
+    
+        /* Only welcome screen visible on this page */
+        #screen-welcome { display: flex !important; animation: fadeUp .3s ease both; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div id="screen-welcome" class="screen">
+        <div class="welcome-card">
+            <span class="w-emoji">🎯</span>
+            <h1 class="w-title">Indovina<br>il <span>Brand!</span></h1>
+            <p class="w-subtitle">Icebreaker · Quiz sui loghi aziendali</p>
+
+            <ul class="rules">
+                <li><span>🖼️</span><span>Tutti i loghi appaiono in griglia, in grigio e nascosti</span></li>
+                <li><span>⌨️</span><span>Digita il nome del brand nel campo input per indovinarlo</span></li>
+                <li><span>✅</span><span>Il logo si rivela e si colora quando sei corretto</span></li>
+                <li><span>⏱️</span><span>Hai <strong id="rule-mins">3</strong> minuti per indovinare quanti più brand possibile</span></li>
+                <li><span>🏅</span><span>Il punteggio = brand indovinati (max <strong id="rule-max">20</strong>)</span></li>
+            </ul>
+
+            <label class="field-label" for="player-name">Il tuo nome</label>
+            <input
+                id="player-name"
+                class="input-field"
+                type="text"
+                placeholder="Es. Mario Rossi"
+                autocomplete="off"
+                spellcheck="false"
+                maxlength="30"
+            >
+
+            <button id="btn-start" class="btn btn-primary" disabled>
+                Inizia la partita →
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+const GAME_DURATION = 180;
+const TOTAL_BRANDS  = 20;
+
+document.getElementById('rule-mins').textContent = Math.floor(GAME_DURATION / 60);
+document.getElementById('rule-max').textContent  = TOTAL_BRANDS;
+
+const nameInput = document.getElementById('player-name');
+const btnStart  = document.getElementById('btn-start');
+
+nameInput.addEventListener('input', () => {
+    btnStart.disabled = nameInput.value.trim().length === 0;
+});
+
+nameInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !btnStart.disabled) startQuiz();
+});
+
+btnStart.addEventListener('click', startQuiz);
+
+function startQuiz() {
+    const name = nameInput.value.trim();
+    if (!name) return;
+    sessionStorage.setItem('quizPlayerName', name);
+    window.location.href = 'quiz.html';
+}
+</script>
+</body>
+</html>
