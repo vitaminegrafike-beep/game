@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AURUM &amp; CO. — Timeless Precision</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="scrolly" id="scrolly">
+    <main class="hero" id="hero">
+      <video class="hero__film" id="film" muted playsinline preload="auto"
+             poster="video/poster.jpg" data-desktop="video/film_desktop.mp4" data-mobile="video/film_mobile.mp4"></video>
+
+      <div class="hero__static" id="static">
+        <img class="hero__bg" src="assets/sfondo.jpg" alt="">
+        <img class="hero__watch" src="assets/orologio.png" alt="Rose gold skeleton watch with brown alligator strap">
+      </div>
+
+      <div class="hero__scrim" id="scrim"></div>
+
+      <header class="nav">
+        <a class="nav__logo" href="#">AURUM &amp; CO.</a>
+        <nav class="nav__menu">
+          <a href="#" data-chapter="0">Collections</a>
+          <a href="#" data-chapter="1">Craftsmanship</a>
+          <a href="#" data-chapter="2">Maison</a>
+          <a href="#" data-chapter="3">Contact</a>
+          <a href="#">Cart (0)</a>
+        </nav>
+      </header>
+
+      <div class="hero__ui" id="ui">
+        <section class="intro">
+          <h1 class="intro__title">TIMELESS<br>PRECISION.</h1>
+          <p class="intro__sub">Masterpieces of horology, engineered for eternity.</p>
+          <a class="intro__btn" href="#">DISCOVER COLLECTION</a>
+        </section>
+
+        <ul class="badges">
+          <li>72H POWER RESERVE</li>
+          <li>HAND-FINISHED CALIBRE</li>
+        </ul>
+
+        <a class="scroll" href="#">
+          <span>Scroll down</span>
+          <svg viewBox="0 0 12 24" aria-hidden="true"><path d="M6 1v21M1.5 17.5 6 22l4.5-4.5"/></svg>
+        </a>
+      </div>
+
+      <div class="chapters">
+        <p class="chapter" data-start="0.04" data-end="0.24">Beyond the surface lies the soul.</p>
+        <p class="chapter" data-start="0.24" data-end="0.44">Time, laid bare.</p>
+        <p class="chapter" data-start="0.44" data-end="0.62">Every part, placed by hand.</p>
+        <p class="chapter" data-start="0.62" data-end="0.84">The heartbeat of eternity.</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- fascia Collection: l'orologio emerge dal buio mentre sorge l'eclissi -->
+  <section class="collection" id="next">
+    <div class="col__pin">
+      <div class="col__eclipse" aria-hidden="true"></div>
+      <div class="col__halo" aria-hidden="true"></div>
+
+      <div class="col__watch">
+        <img class="col__img" src="assets/collection/orologio_frontale.webp" alt="AURUM I skeleton tourbillon in rose gold, front view">
+        <video class="col__gears" autoplay muted loop playsinline aria-hidden="true">
+          <source src="assets/collection/ingranaggi_loop.webm" type="video/webm">
+          <source src="assets/collection/ingranaggi_loop.mp4" type="video/mp4">
+        </video>
+        <img class="col__hand col__hand--h" src="assets/collection/lancette/ore.webp" alt="">
+        <img class="col__hand col__hand--m" src="assets/collection/lancette/minuti.webp" alt="">
+        <img class="col__cap" src="assets/collection/lancette/perno.webp" alt="">
+        <div class="col__light" aria-hidden="true"></div>
+        <div class="col__sheen" aria-hidden="true"></div>
+      </div>
+
+
+      <ul class="col__specs">
+        <li>TOURBILLON</li>
+        <li>72H POWER RESERVE</li>
+        <li>18K ROSE GOLD</li>
+      </ul>
+
+      <p class="col__name">AURUM I &mdash; SQUELETTE TOURBILLON</p>
+      <div class="col__cta">
+        <a href="#">VIEW THE COLLECTION <span aria-hidden="true">&rarr;</span></a>
+        <span class="col__count">01 / 04</span>
+      </div>
+    </div>
+  </section>
+  <script src="script.js"></script>
+</body>
+</html>

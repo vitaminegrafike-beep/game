@@ -1,0 +1,473 @@
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("fonts/CormorantGaramond.woff2") format("woff2");
+  font-weight: 300 700;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("fonts/Inter.woff2") format("woff2");
+  font-weight: 100 900;
+}
+
+:root {
+  /* unità tipografica: 1% dell'altezza, limitata dalla larghezza per finestre strette */
+  --u: min(1vh, 0.573vw);
+  --gold: #c8a96e;
+  --title: #dadfe3;
+  --menu: #bbc5cc;
+  --sub: #abaeb2;
+  --badge: #c9ccd0;
+  --scroll: #a3a7aa;
+  --dark: #090b0f;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  overflow-x: clip;
+  background: var(--dark);
+}
+
+body {
+  background: var(--dark);
+}
+
+body {
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 32rem;
+  overflow: hidden;
+}
+
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero__watch {
+  position: absolute;
+  height: calc(var(--u) * 81);
+  top: 9.2%;
+  left: 41.7%;
+  width: auto;
+}
+
+/* Header */
+.nav {
+  position: absolute;
+  top: 3.7%;
+  left: 5%;
+  right: 4.4%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.nav__logo {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 500;
+  font-size: calc(var(--u) * 2.85);
+  letter-spacing: 0.01em;
+  color: var(--gold);
+}
+
+.nav__menu {
+  display: flex;
+  gap: calc(var(--u) * 2.4);
+  font-size: calc(var(--u) * 1.72);
+  font-weight: 400;
+  color: var(--menu);
+}
+
+/* Blocco testo */
+.intro {
+  position: absolute;
+  left: 5%;
+  top: 31%;
+}
+
+.intro__title {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  font-size: calc(var(--u) * 9.8);
+  line-height: 0.97;
+  letter-spacing: -0.005em;
+  color: var(--title);
+}
+
+.intro__sub {
+  margin-top: calc(var(--u) * 3.2);
+  font-size: calc(var(--u) * 2.24);
+  font-weight: 400;
+  color: var(--sub);
+}
+
+.intro__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: calc(var(--u) * 3.6);
+  width: calc(var(--u) * 30.2);
+  height: calc(var(--u) * 6);
+  border: 1px solid rgba(200, 169, 110, 0.75);
+  border-radius: 999px;
+  font-size: calc(var(--u) * 1.82);
+  font-weight: 400;
+  letter-spacing: 0.035em;
+  color: var(--gold);
+}
+
+/* Box caratteristiche */
+.badges {
+  position: absolute;
+  right: 4.4%;
+  bottom: 6.4%;
+  width: calc(var(--u) * 30.8);
+  list-style: none;
+  border: 1px solid rgba(200, 205, 210, 0.45);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.badges li {
+  display: flex;
+  align-items: center;
+  height: calc(var(--u) * 5.35);
+  padding-left: calc(var(--u) * 2.1);
+  font-size: calc(var(--u) * 1.9);
+  font-weight: 400;
+  color: var(--badge);
+}
+
+.badges li + li { border-top: 1px solid rgba(200, 205, 210, 0.45); }
+
+/* Indicatore scroll */
+.scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 4.2%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--u) * 1.2);
+  font-size: calc(var(--u) * 1.95);
+  font-weight: 400;
+  color: var(--scroll);
+}
+
+.scroll svg {
+  width: calc(var(--u) * 1.3);
+  height: calc(var(--u) * 2.6);
+  fill: none;
+  stroke: var(--scroll);
+  stroke-width: 1.3;
+}
+
+/* Film guidato dallo scroll */
+.scrolly {
+  position: relative;
+  height: 600vh;
+}
+
+.scrolly .hero {
+  position: sticky;
+  top: 0;
+}
+
+.hero__film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--dark);
+  transform-origin: 46% 45%;
+  will-change: transform, filter;
+}
+
+/* fascia successiva alla hero */
+.band {
+  position: relative;
+  min-height: 100vh;
+  background: var(--dark);
+}
+
+.hero__static {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+.reduced .hero__static { display: block; }
+
+/* velo scuro per leggere testi e menu sopra il film */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(9, 11, 15, 0.7) 0%, rgba(9, 11, 15, 0) 16%),
+    radial-gradient(ellipse 80% 70% at 0% 100%, rgba(9, 11, 15, 0.92) 0%, rgba(9, 11, 15, 0.7) 40%, rgba(9, 11, 15, 0) 100%);
+}
+
+.nav__menu a { transition: color 0.4s ease; }
+.nav__menu a.is-active { color: var(--gold); }
+
+/* Frasi che accompagnano la scomposizione */
+.chapter {
+  position: absolute;
+  left: 5%;
+  bottom: 14%;
+  max-width: calc(var(--u) * 90);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 500;
+  font-size: calc(var(--u) * 5.2);
+  line-height: 1.05;
+  color: var(--title);
+  opacity: 0;
+  pointer-events: none;
+  text-shadow: 0 0 1.2em rgba(9, 11, 15, 0.9), 0 0 0.3em rgba(9, 11, 15, 0.8);
+}
+
+/* bagliore dorato all'ingresso della frase, poi si spegne */
+.chapter.is-lit { animation: glow 2.4s ease-out; }
+@keyframes glow {
+  0%   { text-shadow: 0 0 1.2em rgba(9, 11, 15, 0.9), 0 0 0.3em rgba(9, 11, 15, 0.8); }
+  35%  { color: #f3e3c3; text-shadow: 0 0 0.35em rgba(214, 180, 116, 0.8), 0 0 1.2em rgba(200, 169, 110, 0.45), 0 0 0.3em rgba(9, 11, 15, 0.8); }
+  100% { text-shadow: 0 0 1.2em rgba(9, 11, 15, 0.9), 0 0 0.3em rgba(9, 11, 15, 0.8); }
+}
+
+/* prefers-reduced-motion: hero statica e sezioni in sequenza */
+.reduced .scrolly { height: auto; }
+.reduced .scrolly .hero { position: relative; }
+.reduced .hero__film { display: none; }
+.reduced .band { display: none; }
+.reduced .chapters {
+  background: var(--dark);
+  padding: 12vh 5% 16vh;
+  display: grid;
+  gap: 10vh;
+}
+.reduced .chapter {
+  position: static;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* titolo e CTA restano sopra il film: ombra scura per staccarli dai pezzi in movimento */
+.intro__title, .intro__sub { text-shadow: 0 0 0.6em rgba(9, 11, 15, 0.85), 0 0 0.2em rgba(9, 11, 15, 0.7); }
+.intro__btn { background: rgba(9, 11, 15, 0.35); }
+
+/* Hover: CTA piena oro con testo bianco, voci menu in oro */
+.intro__btn { transition: background-color 0.35s ease, border-color 0.35s ease, color 0.35s ease; }
+.intro__btn:hover, .intro__btn:focus-visible { background: var(--gold); border-color: var(--gold); color: #fff; }
+.nav__menu a:hover, .nav__menu a:focus-visible { color: var(--gold); }
+
+/* ---------- Fascia Collection ---------- */
+.collection {
+  position: relative;
+  height: 220vh;
+  background: #070504;
+}
+
+.col__pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  min-height: 32rem;
+  overflow: hidden;
+  background: radial-gradient(ellipse 70% 55% at 50% 62%, #1a0f08 0%, #0b0705 55%, #070504 100%);
+  --p: 0;      /* avanzamento dell'eclissi, 0..1 */
+  --sheen: 0;  /* passaggio della luce sul vetro, 0..1 */
+}
+
+/* eclissi: un disco scuro con il bordo acceso da dietro, che sfuma verso il basso */
+.col__eclipse {
+  position: absolute;
+  left: 50%;
+  top: calc(43% - 22.5vh);
+  width: 205vh;
+  aspect-ratio: 1;
+  transform: translate(-50%, calc((1 - var(--p)) * 45vh));
+  background: radial-gradient(circle closest-side, #070403 0%, #070403 74%, #120905 78%);
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 78%, transparent 78.3%), linear-gradient(to bottom, #000 0%, #000 14%, transparent 40%);
+  mask-image: radial-gradient(circle closest-side, #000 78%, transparent 78.3%), linear-gradient(to bottom, #000 0%, #000 14%, transparent 40%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+.col__halo {
+  position: absolute;
+  left: 50%;
+  top: calc(43% - 22.5vh);
+  width: 205vh;
+  aspect-ratio: 1;
+  transform: translate(-50%, calc((1 - var(--p)) * 45vh));
+  opacity: var(--p);
+  background: radial-gradient(circle closest-side,
+    rgba(150, 66, 24, 0) 60%,
+    rgba(150, 66, 24, 0.18) 74%,
+    rgba(255, 210, 150, 0.9) 77.9%,
+    rgba(255, 238, 210, 1) 78.15%,
+    rgba(248, 168, 92, 0.6) 79%,
+    rgba(222, 124, 54, 0.28) 81.5%,
+    rgba(180, 90, 36, 0.1) 87%,
+    rgba(150, 70, 30, 0) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 12%, transparent 38%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 12%, transparent 38%);
+  pointer-events: none;
+}
+
+.col__watch {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: min(66vh, 140vw);
+  aspect-ratio: 2752 / 1536;
+  transform: translate(-50%, -50%) scale(calc(1.06 - 0.06 * var(--p)));
+  filter: brightness(calc(0.12 + 0.88 * var(--p))) blur(calc((1 - var(--p)) * 10px));
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 80%, transparent 99%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 80%, transparent 99%);
+}
+
+.col__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* lancette ritagliate dalla foto: ogni livello è un quadrato centrato sul perno */
+.col__hand, .col__cap {
+  position: absolute;
+  left: 34.593%;
+  top: 19.596%;
+  width: 31.25%;
+  height: 55.99%;
+  transform-origin: 50% 50%;
+}
+.col__hand { filter: drop-shadow(0 0.35vh 0.45vh rgba(0, 0, 0, 0.55)); will-change: transform; }
+
+/* luce calda dell'eclissi sulla cassa, e un unico riflesso che attraversa il vetro */
+.col__light, .col__sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask: url("assets/collection/orologio_frontale.webp") center / 100% 100% no-repeat;
+  mask: url("assets/collection/orologio_frontale.webp") center / 100% 100% no-repeat;
+}
+.col__light {
+  background: linear-gradient(to top, rgba(255, 150, 70, 0.55) 0%, rgba(255, 150, 70, 0) 55%);
+  mix-blend-mode: soft-light;
+  opacity: var(--p);
+}
+.col__sheen {
+  background: linear-gradient(112deg, transparent 0%, transparent 42%, rgba(255, 232, 196, 0.85) 50%, transparent 58%, transparent 100%);
+  background-size: 300% 100%;
+  background-position: calc(100% - var(--sheen) * 100%) 0;
+  mix-blend-mode: soft-light;
+  opacity: calc(sin(var(--sheen) * 3.1416));
+}
+
+.col__word {
+  position: absolute;
+  left: 50%;
+  top: 17%;
+  transform: translateX(-50%);
+  margin-right: -0.36em;
+  font-weight: 200;
+  font-size: calc(var(--u) * 10.5);
+  letter-spacing: 0.36em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(226, 196, 150, 0.42);
+  white-space: nowrap;
+  opacity: calc(var(--p) * 0.9);
+  pointer-events: none;
+}
+
+.col__specs {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  list-style: none;
+  border-bottom: 1px solid rgba(200, 169, 110, 0.14);
+  background: rgba(7, 5, 4, 0.55);
+}
+.col__specs li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(var(--u) * 11);
+  font-size: calc(var(--u) * 1.15);
+  letter-spacing: 0.3em;
+  color: rgba(200, 169, 110, 0.85);
+}
+.col__specs li + li { border-left: 1px solid rgba(200, 169, 110, 0.14); }
+
+.col__name, .col__cta {
+  position: absolute;
+  bottom: 9%;
+  font-size: calc(var(--u) * 1.2);
+  letter-spacing: 0.28em;
+  color: var(--title);
+}
+.col__name { left: 5%; }
+.col__cta {
+  right: 5%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: calc(var(--u) * 2);
+}
+.col__cta a {
+  padding-bottom: calc(var(--u) * 1.2);
+  border-bottom: 1px solid rgba(218, 223, 227, 0.4);
+  transition: color 0.35s ease, border-color 0.35s ease;
+}
+.col__cta a:hover, .col__cta a:focus-visible { color: var(--gold); border-color: var(--gold); }
+.col__count { color: var(--scroll); }
+
+.col__specs, .col__name, .col__cta {
+  opacity: clamp(0, (var(--p) - 0.7) * 4, 1);
+  transform: translateY(calc((1 - clamp(0, (var(--p) - 0.7) * 4, 1)) * 1.5vh));
+}
+.col__specs { transform: none; }
+
+@media (max-aspect-ratio: 1/1) {
+  .col__watch { height: min(66vh, 105vw); }
+  .col__eclipse, .col__halo { width: 190vw; top: calc(43% - 20vw); }
+  .col__word { font-size: 8vw; top: 20%; letter-spacing: 0.24em; margin-right: -0.24em; }
+  .col__name, .col__cta { font-size: 2.6vw; letter-spacing: 0.22em; }
+  .col__name { left: 5%; right: 5%; bottom: 15%; text-align: center; }
+  .col__cta { left: 0; right: 0; bottom: 6%; align-items: center; }
+  .col__specs li { height: 9vh; font-size: 2.3vw; letter-spacing: 0.16em; text-align: center; padding: 0 1vw; }
+}
+
+.reduced .collection { height: auto; }
+.reduced .col__pin { position: relative; }
+.reduced .col__pin { --p: 1; }
+
+/* ingranaggi in movimento: il video copre solo il quadrante, cassa e cinturino restano la foto nitida */
+.col__gears {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse 15.2% 27.2% at 50.2% 47.6%, #000 88%, transparent 100%);
+  mask-image: radial-gradient(ellipse 15.2% 27.2% at 50.2% 47.6%, #000 88%, transparent 100%);
+}
