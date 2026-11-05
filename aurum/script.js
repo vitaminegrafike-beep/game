@@ -82,7 +82,10 @@
     current = Math.abs(d) < 0.0002 ? target : current + d * EASE;
 
     if (film.readyState >= 1 && film.duration) {
-      var t = Math.min(1, current / FILM) * (film.duration - 0.05);
+      // i distacchi avvengono nei primi ~8 s del film: gli diamo il 70% dello scroll del film
+      var f = Math.min(1, current / FILM);
+      var r = f < 0.7 ? (f / 0.7) * (8 / 15) : 8 / 15 + ((f - 0.7) / 0.3) * (7 / 15);
+      var t = r * (film.duration - 0.05);
       if (Math.abs(film.currentTime - t) > 0.001) film.currentTime = t;
     }
 
