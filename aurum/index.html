@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AURUM &amp; CO. — Timeless Precision</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=20261106b">
 </head>
 <body>
   <div class="scrolly" id="scrolly">
@@ -59,14 +59,15 @@
   <!-- fascia Collection: l'orologio emerge dal buio mentre sorge l'eclissi -->
   <section class="collection" id="next">
     <div class="col__pin">
+      <canvas class="col__sky" aria-hidden="true"></canvas>
       <div class="col__eclipse" aria-hidden="true"></div>
       <div class="col__halo" aria-hidden="true"></div>
 
       <div class="col__watch">
-        <img class="col__img" src="assets/collection/orologio_frontale.webp" alt="AURUM I skeleton tourbillon in rose gold, front view">
+        <img class="col__img" src="assets/collection/hd/orologio_frontale_hd.webp" alt="AURUM I skeleton tourbillon in rose gold, front view">
         <video class="col__gears" autoplay muted loop playsinline aria-hidden="true">
-          <source src="assets/collection/ingranaggi_loop.webm" type="video/webm">
-          <source src="assets/collection/ingranaggi_loop.mp4" type="video/mp4">
+          <source src="assets/collection/hd/ingranaggi_loop_hd.webm" type="video/webm">
+          <source src="assets/collection/hd/ingranaggi_loop_hd.mp4" type="video/mp4">
         </video>
         <img class="col__hand col__hand--h" src="assets/collection/lancette/ore.webp" alt="">
         <img class="col__hand col__hand--m" src="assets/collection/lancette/minuti.webp" alt="">
@@ -89,6 +90,7 @@
       </div>
     </div>
   </section>
-  <script src="script.js"></script>
+  <script src="script.js?v=20261106b"></script>
+  <script src="sky.js?v=20261106b"></script>
 </body>
 </html>

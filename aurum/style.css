@@ -309,6 +309,19 @@ a { color: inherit; text-decoration: none; }
   --sheen: 0;  /* passaggio della luce sul vetro, 0..1 */
 }
 
+/* cielo notturno nella parte alta: blu quasi nero, stelle e costellazioni (sky.js) */
+.col__sky {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, #050915 0%, #070b18 28%, rgba(8, 10, 20, 0.6) 46%, rgba(8, 10, 20, 0) 66%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 34%, transparent 64%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 34%, transparent 64%);
+  opacity: calc(0.45 + 0.55 * var(--p));
+  pointer-events: none;
+}
+
 /* eclissi: un disco scuro con il bordo acceso da dietro, che sfuma verso il basso */
 .col__eclipse {
   position: absolute;
@@ -350,7 +363,7 @@ a { color: inherit; text-decoration: none; }
   left: 50%;
   top: 50%;
   height: min(66vh, 140vw);
-  aspect-ratio: 2752 / 1536;
+  aspect-ratio: 3840 / 2143;
   transform: translate(-50%, -50%) scale(calc(1.06 - 0.06 * var(--p)));
   filter: brightness(calc(0.12 + 0.88 * var(--p))) blur(calc((1 - var(--p)) * 10px));
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 80%, transparent 99%);
@@ -380,8 +393,8 @@ a { color: inherit; text-decoration: none; }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  -webkit-mask: url("assets/collection/orologio_frontale.webp") center / 100% 100% no-repeat;
-  mask: url("assets/collection/orologio_frontale.webp") center / 100% 100% no-repeat;
+  -webkit-mask: url("assets/collection/hd/orologio_frontale_hd.webp") center / 100% 100% no-repeat;
+  mask: url("assets/collection/hd/orologio_frontale_hd.webp") center / 100% 100% no-repeat;
 }
 .col__light {
   background: linear-gradient(to top, rgba(255, 150, 70, 0.55) 0%, rgba(255, 150, 70, 0) 55%);
