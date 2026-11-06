@@ -16,6 +16,7 @@
   var pin = col.querySelector(".col__pin");
   var handH = col.querySelector(".col__hand--h");
   var handM = col.querySelector(".col__hand--m");
+  var gears = col.querySelector(".col__gears");
   var BASE_M = 51.3, BASE_H = 302.5; // angoli delle lancette nella foto (gradi, da ore 12)
   var colCurrent = reduce ? 1 : 0;
 
@@ -31,6 +32,7 @@
     var sheen = Math.min(1, Math.max(0, (colCurrent - 0.62) / 0.3));
     pin.style.setProperty("--p", p.toFixed(4));
     pin.style.setProperty("--sheen", sheen.toFixed(4));
+    gears.classList.toggle("is-live", p > 0.999);
 
     var now = new Date();
     var sec = now.getSeconds() + now.getMilliseconds() / 1000;

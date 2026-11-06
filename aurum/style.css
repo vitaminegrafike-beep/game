@@ -500,4 +500,10 @@ a { color: inherit; text-decoration: none; }
   pointer-events: none;
   -webkit-mask-image: radial-gradient(ellipse 15.2% 27.2% at 50.2% 47.6%, #000 88%, transparent 100%);
   mask-image: radial-gradient(ellipse 15.2% 27.2% at 50.2% 47.6%, #000 88%, transparent 100%);
+  /* durante zoom e messa a fuoco si vede la foto ferma: il video, ridimensionato a ogni fotogramma,
+     veniva riallineato al pixel in modo diverso dalla foto e il meccanismo sembrava vibrare */
+  opacity: 0;
+  transition: opacity 0.35s ease;
 }
+.col__gears.is-live { opacity: 1; transition: opacity 0.9s ease; }
+.reduced .col__gears { opacity: 1; }
