@@ -86,7 +86,9 @@
       var f = Math.min(1, current / FILM);
       var r = f < 0.7 ? (f / 0.7) * (8 / 15) : 8 / 15 + ((f - 0.7) / 0.3) * (7 / 15);
       var t = r * (film.duration - 0.05);
-      if (Math.abs(film.currentTime - t) > 0.001) film.currentTime = t;
+      // una ricerca alla volta: se il video sta ancora cercando il fotogramma precedente non ne accodiamo
+      // un'altra (le richieste accumulate, soprattutto tornando indietro, causavano scatti)
+      if (!film.seeking && Math.abs(film.currentTime - t) > 0.001) film.currentTime = t;
     }
 
     // dopo l'ultimo fotogramma l'orologio continua ad avvicinarsi e sfoca

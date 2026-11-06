@@ -13,6 +13,7 @@
   function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
 
   var W = 0, H = 0, dpr = 1, K = 1, pole = { x: 0, y: 0 };
+  var strap = { l: 0, r: 0, b: 0 }, caseBox = { l: 0, r: 0, t: 0 }; // zone dell'orologio da non attraversare
   var stars = [], dust = [], cons = [];
   // costellazioni famose che possono illuminarsi; le altre restano solo in filigrana
   var ICON = ["URSA MAJOR", "URSA MINOR", "CASSIOPEIA", "CEPHEUS", "CYGNUS", "LYRA", "PERSEUS", "AURIGA", "GEMINI",
@@ -25,6 +26,14 @@
     // polo nord celeste sopra lo schermo, un po' a destra; K = pixel per grado
     pole.x = W * 0.6; pole.y = -H * 0.2;
     K = Math.max(H, W * 0.56) / 80;
+    // il cinturino in alto sfuma nel cielo: lì le costellazioni non devono passare
+    var wEl = pin.querySelector(".col__watch");
+    if (wEl) {
+      var pr = pin.getBoundingClientRect(), wr = wEl.getBoundingClientRect();
+      var cx = wr.left - pr.left + wr.width / 2, top = wr.top - pr.top;
+      strap.l = cx - wr.width * 0.115; strap.r = cx + wr.width * 0.115; strap.b = top + wr.height * 0.4;
+      caseBox.l = cx - wr.width * 0.23; caseBox.r = cx + wr.width * 0.23; caseBox.t = top + wr.height * 0.15;
+    }
 
     stars = SKY_STARS.map(function (s, i) {
       var m = s[2];
@@ -118,12 +127,12 @@
           [sg[0], sg[1]].forEach(function (q) {
             tot++;
             if (q.x > 0 && q.x < W && q.y > H * 0.12 && q.y < H * 0.62) vis++;
-            if (q.x > W * 0.36 && q.x < W * 0.64 && q.y > H * 0.2) behind++;
+            if ((q.x > strap.l && q.x < strap.r && q.y < strap.b) || (q.x > caseBox.l && q.x < caseBox.r && q.y > caseBox.t)) behind++;
           });
         });
-        vis /= tot; behind /= tot;
-        if (vis >= 0.85 && behind <= 0.15) cand.push(k);
-        else if (vis >= 0.7 && behind <= 0.3) loose.push(k);
+        vis /= tot;
+        if (vis >= 0.85 && behind === 0) cand.push(k);
+        else if (vis >= 0.7 && behind / tot <= 0.1) loose.push(k);
       });
       if (!cand.length) cand = loose;
       litIdx = cand.length ? cand[Math.floor(Math.random() * cand.length)] : -1;
@@ -133,6 +142,12 @@
     var glow = lt < 1.8 ? lt / 1.8 : lt < 4 ? 1 : Math.max(0, 1 - (lt - 4) / 2);
     glow = glow * glow * (3 - 2 * glow);
 
+    // le linee non vengono disegnate sopra il cinturino
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, W, H);
+    ctx.rect(strap.l, 0, strap.r - strap.l, strap.b);
+    ctx.clip("evenodd");
     placed.forEach(function (p, k) {
       // tutte le figure in filigrana
       ctx.lineWidth = 0.6;
@@ -176,6 +191,8 @@
       ctx.fillText(p.name, Math.min(W * 0.92, Math.max(W * 0.08, p.cx)), ly);
       ctx.restore();
     });
+
+    ctx.restore();
 
     if (!reduce && visible) requestAnimationFrame(draw);
   }
