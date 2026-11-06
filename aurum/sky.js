@@ -1,116 +1,180 @@
-// Cielo stellato dietro l'eclissi: blu quasi nero, stelle e costellazioni che ruotano lentamente
+// Cielo stellato dietro l'eclissi: stelle e costellazioni reali (sky-data.js) in proiezione polare,
+// che ruotano attorno alla Stella Polare; a turno una costellazione si illumina con il suo nome
 (function () {
   var canvas = document.querySelector(".col__sky");
-  if (!canvas) return;
+  if (!canvas || typeof SKY_STARS === "undefined") return;
   var ctx = canvas.getContext("2d");
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var pin = canvas.parentNode;
+  var RAD = Math.PI / 180;
 
-  // generatore pseudo-casuale con seme fisso: il cielo è sempre lo stesso
+  // generatore pseudo-casuale con seme fisso, solo per il pulviscolo di stelle debolissime
   var seed = 7;
   function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
 
-  // costellazioni (coordinate locali, unità ~ un decimo dell'altezza dello schermo)
-  var SHAPES = [
-    // Grande Carro
-    { pts: [[0, 0], [1.1, 0.15], [2.0, 0.45], [2.9, 0.55], [3.2, 1.45], [4.3, 1.55], [4.5, 0.6]], lines: [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,3]] },
-    // Cassiopea
-    { pts: [[0, 0.6], [0.8, 0], [1.5, 0.7], [2.3, 0.2], [3.0, 0.9]], lines: [[0,1],[1,2],[2,3],[3,4]] },
-    // Orione
-    { pts: [[0, 0], [2.0, 0.2], [0.85, 1.55], [1.1, 1.6], [1.35, 1.65], [0.2, 3.0], [2.1, 3.1], [1.0, -0.7]], lines: [[0,2],[1,4],[2,3],[3,4],[2,5],[4,6],[0,7],[1,7]] },
-    // Cigno
-    { pts: [[1.2, 0], [1.2, 1.0], [1.2, 2.1], [0, 0.9], [2.4, 1.1], [1.2, 2.9]], lines: [[0,1],[1,2],[2,5],[3,1],[1,4]] },
-    // Lira
-    { pts: [[0.4, 0], [0, 0.8], [0.8, 0.9], [0.1, 1.7], [0.9, 1.8]], lines: [[0,1],[0,2],[1,2],[1,3],[2,4],[3,4]] },
-    // Leone
-    { pts: [[0, 1.2], [0.6, 0.6], [1.3, 0.4], [1.8, 0.9], [1.5, 1.5], [3.6, 1.0], [3.9, 1.8], [1.4, 2.2]], lines: [[0,1],[1,2],[2,3],[3,4],[4,7],[4,5],[5,6],[6,7]] }
-  ];
-
-  var stars = [], figures = [];
-  var W = 0, H = 0, dpr = 1, R = 0, pole = { x: 0, y: 0 };
+  var W = 0, H = 0, dpr = 1, K = 1, pole = { x: 0, y: 0 };
+  var stars = [], dust = [], cons = [];
+  // costellazioni famose che possono illuminarsi; le altre restano solo in filigrana
+  var ICON = ["URSA MAJOR", "URSA MINOR", "CASSIOPEIA", "CEPHEUS", "CYGNUS", "LYRA", "PERSEUS", "AURIGA", "GEMINI",
+    "LEO", "BOÖTES", "CORONA BOREALIS", "HERCULES", "ANDROMEDA", "PEGASUS", "ORION"];
 
   function build() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = pin.clientWidth; H = pin.clientHeight;
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
-    // polo celeste sopra lo schermo, un po' a destra: il cielo gira attorno a lui
-    pole.x = W * 0.62; pole.y = -H * 0.55;
-    R = Math.hypot(Math.max(pole.x, W - pole.x), H - pole.y) * 1.05;
+    // polo nord celeste sopra lo schermo, un po' a destra; K = pixel per grado
+    pole.x = W * 0.6; pole.y = -H * 0.2;
+    K = Math.max(H, W * 0.56) / 80;
 
-    seed = 7; stars = []; figures = [];
-    var area = Math.PI * R * R;
-    var n = Math.round(area / 2600);
+    stars = SKY_STARS.map(function (s, i) {
+      var m = s[2];
+      return {
+        r: (90 - s[1]) * K, a: s[0] * RAD,
+        size: Math.max(0.45, Math.min(2.7, (6 - m) * 0.45)),
+        alpha: Math.max(0.3, Math.min(1, 0.35 + (5.6 - m) * 0.16)),
+        tw: (i * 2.399) % 6.283, tws: 0.4 + (i % 7) * 0.2,
+        hue: i % 9 === 0 ? "255,224,186" : (i % 5 === 0 ? "196,214,255" : "238,242,255")
+      };
+    });
+
+    seed = 7; dust = [];
+    var R = Math.hypot(Math.max(pole.x, W - pole.x), H - pole.y);
+    var n = Math.round(R * R / 2600);
     for (var i = 0; i < n; i++) {
-      var r = R * Math.sqrt(rnd()), a = rnd() * Math.PI * 2;
-      var m = Math.pow(rnd(), 3.2); // pochissime stelle luminose, molte deboli
-      stars.push({
-        r: r, a: a,
-        size: 0.35 + m * 1.5,
-        alpha: 0.25 + m * 0.75,
-        tw: rnd() * Math.PI * 2, tws: 0.4 + rnd() * 1.4,
-        hue: rnd() < 0.18 ? "255,226,190" : (rnd() < 0.3 ? "190,210,255" : "235,240,255")
-      });
+      dust.push({ r: R * Math.sqrt(rnd()), a: rnd() * Math.PI * 2, alpha: 0.1 + rnd() * 0.3, size: 0.35 + rnd() * 0.35 });
     }
 
-    // costellazioni distribuite attorno al polo, nella fascia che attraversa la parte alta dello schermo
-    var unit = H * 0.085;
-    var ring = Math.hypot(W * 0.5, H * 0.75);
-    SHAPES.forEach(function (s, k) {
-      var a0 = Math.PI * 0.5 + (k - 2.5) * 0.42 + (rnd() - 0.5) * 0.12;
-      var r0 = ring * (0.72 + rnd() * 0.42);
-      var rot = rnd() * Math.PI * 2;
-      var pts = s.pts.map(function (p) {
-        var x = p[0] * unit, y = p[1] * unit;
-        var cx = Math.cos(rot) * x - Math.sin(rot) * y, cy = Math.sin(rot) * x + Math.cos(rot) * y;
-        var px = Math.cos(a0) * r0 + cx, py = Math.sin(a0) * r0 + cy;
-        return { r: Math.hypot(px, py), a: Math.atan2(py, px), size: 1.1 + rnd() * 0.9 };
+    cons = SKY_CONS.map(function (c) {
+      var segs = [];
+      c.l.forEach(function (line) {
+        for (var i = 0; i < line.length - 1; i++) {
+          segs.push([{ r: (90 - line[i][1]) * K, a: line[i][0] * RAD }, { r: (90 - line[i + 1][1]) * K, a: line[i + 1][0] * RAD }]);
+        }
       });
-      figures.push({ pts: pts, lines: s.lines });
+      return { name: c.n, segs: segs, icon: ICON.indexOf(c.n) >= 0 };
     });
   }
 
-  var t0 = performance.now();
-  var SPEED = 0.02; // radianti al secondo: un giro ogni ~5 minuti, movimento ben visibile
-
-  function pos(o, ang) {
-    var a = o.a + ang;
+  function pos(o, rot) {
+    var a = o.a + rot;
     return { x: pole.x + Math.cos(a) * o.r, y: pole.y + Math.sin(a) * o.r };
   }
 
+  var t0 = performance.now();
+  var SPEED = 0.02;   // radianti al secondo: un giro ogni ~5 minuti
+  var START = 2.9;    // rotazione iniziale: Lira, Ercole e Corona Boreale in vista
+  var LIT = 6;        // secondi per ogni costellazione illuminata
+  var litIdx = -1, litStart = -10;
+
   function draw(now) {
     var t = (now - t0) / 1000;
-    var ang = reduce ? 0 : t * SPEED;
+    // vista da dentro la sfera: verso nord il cielo gira in senso antiorario
+    var rot = START - (reduce ? 0 : t * SPEED);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
+    var lim = H * 0.7;
 
-    for (var i = 0; i < stars.length; i++) {
-      var s = stars[i], p = pos(s, ang);
-      if (p.x < -4 || p.x > W + 4 || p.y < -4 || p.y > H + 4) continue;
-      var tw = reduce ? 1 : 0.75 + 0.25 * Math.sin(t * s.tws + s.tw);
+    dust.forEach(function (d) {
+      var p = pos(d, rot);
+      if (p.x < 0 || p.x > W || p.y < 0 || p.y > lim) return;
+      ctx.fillStyle = "rgba(220,228,255," + d.alpha + ")";
+      ctx.fillRect(p.x, p.y, d.size * 2, d.size * 2);
+    });
+
+    stars.forEach(function (s) {
+      var p = pos(s, rot);
+      if (p.x < -6 || p.x > W + 6 || p.y < -6 || p.y > lim) return;
+      var tw = reduce ? 1 : 0.78 + 0.22 * Math.sin(t * s.tws + s.tw);
       ctx.fillStyle = "rgba(" + s.hue + "," + (s.alpha * tw).toFixed(3) + ")";
       ctx.beginPath(); ctx.arc(p.x, p.y, s.size, 0, 6.2832); ctx.fill();
-      if (s.size > 1.4) { // alone delle stelle più luminose
-        ctx.fillStyle = "rgba(" + s.hue + "," + (0.08 * tw).toFixed(3) + ")";
+      if (s.size > 1.5) {
+        ctx.fillStyle = "rgba(" + s.hue + "," + (0.09 * tw).toFixed(3) + ")";
         ctx.beginPath(); ctx.arc(p.x, p.y, s.size * 3.2, 0, 6.2832); ctx.fill();
       }
-    }
+    });
 
-    // costellazioni: linee sottili color oro pallido, stelle un po' più luminose
-    ctx.lineWidth = 0.7;
-    figures.forEach(function (f, k) {
-      var pts = f.pts.map(function (o) { return pos(o, ang); });
-      var breathe = reduce ? 1 : 0.8 + 0.2 * Math.sin(t * 0.35 + k * 1.7);
-      ctx.strokeStyle = "rgba(214,190,150," + (0.22 * breathe).toFixed(3) + ")";
-      ctx.beginPath();
-      f.lines.forEach(function (l) { ctx.moveTo(pts[l[0]].x, pts[l[0]].y); ctx.lineTo(pts[l[1]].x, pts[l[1]].y); });
-      ctx.stroke();
-      pts.forEach(function (p, j) {
-        var o = f.pts[j];
-        ctx.fillStyle = "rgba(245,236,220,0.9)";
-        ctx.beginPath(); ctx.arc(p.x, p.y, o.size, 0, 6.2832); ctx.fill();
-        ctx.fillStyle = "rgba(245,236,220,0.1)";
-        ctx.beginPath(); ctx.arc(p.x, p.y, o.size * 3.5, 0, 6.2832); ctx.fill();
+    // posizione attuale di ogni figura
+    var placed = cons.map(function (c) {
+      var pts = c.segs.map(function (sg) { return [pos(sg[0], rot), pos(sg[1], rot)]; });
+      var cx = 0, cy = 0, bottom = -Infinity, top = Infinity, left = Infinity, right = -Infinity, n = 0;
+      pts.forEach(function (sg) {
+        cx += sg[0].x + sg[1].x; cy += sg[0].y + sg[1].y; n += 2;
+        bottom = Math.max(bottom, sg[0].y, sg[1].y); top = Math.min(top, sg[0].y, sg[1].y);
+        left = Math.min(left, sg[0].x, sg[1].x); right = Math.max(right, sg[0].x, sg[1].x);
       });
+      return { name: c.name, icon: c.icon, pts: pts, cx: cx / n, cy: cy / n, top: top, bottom: bottom, left: left, right: right };
+    });
+
+    // scelta della prossima costellazione da illuminare, tra quelle ben visibili
+    if (!reduce && t - litStart > LIT) {
+      litStart = t;
+      // figure famose quasi tutte in vista e non nascoste dietro l'orologio al centro;
+      // se non ce ne sono, si accetta una figura vista in parte
+      var cand = [], loose = [];
+      placed.forEach(function (p, k) {
+        if (k === litIdx || !p.icon) return;
+        var vis = 0, behind = 0, tot = 0;
+        p.pts.forEach(function (sg) {
+          [sg[0], sg[1]].forEach(function (q) {
+            tot++;
+            if (q.x > 0 && q.x < W && q.y > H * 0.12 && q.y < H * 0.62) vis++;
+            if (q.x > W * 0.36 && q.x < W * 0.64 && q.y > H * 0.2) behind++;
+          });
+        });
+        vis /= tot; behind /= tot;
+        if (vis >= 0.85 && behind <= 0.15) cand.push(k);
+        else if (vis >= 0.7 && behind <= 0.3) loose.push(k);
+      });
+      if (!cand.length) cand = loose;
+      litIdx = cand.length ? cand[Math.floor(Math.random() * cand.length)] : -1;
+    }
+    var lt = t - litStart;
+    var trace = Math.min(1, lt / 1.8);
+    var glow = lt < 1.8 ? lt / 1.8 : lt < 4 ? 1 : Math.max(0, 1 - (lt - 4) / 2);
+    glow = glow * glow * (3 - 2 * glow);
+
+    placed.forEach(function (p, k) {
+      // tutte le figure in filigrana
+      ctx.lineWidth = 0.6;
+      ctx.strokeStyle = "rgba(214,190,150,0.16)";
+      ctx.beginPath();
+      p.pts.forEach(function (sg) { ctx.moveTo(sg[0].x, sg[0].y); ctx.lineTo(sg[1].x, sg[1].y); });
+      ctx.stroke();
+
+      var g = k === litIdx ? glow : 0;
+      if (g < 0.001) return;
+      // linee accese, tracciate una dopo l'altra
+      ctx.save();
+      ctx.shadowColor = "rgba(255,200,120," + (0.9 * g).toFixed(3) + ")";
+      ctx.shadowBlur = 10;
+      ctx.lineWidth = 1.3;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "rgba(255,222,165," + (0.85 * g).toFixed(3) + ")";
+      var n = p.pts.length;
+      ctx.beginPath();
+      p.pts.forEach(function (sg, i) {
+        var part = Math.min(1, Math.max(0, trace * n - i));
+        if (part <= 0) return;
+        ctx.moveTo(sg[0].x, sg[0].y);
+        ctx.lineTo(sg[0].x + (sg[1].x - sg[0].x) * part, sg[0].y + (sg[1].y - sg[0].y) * part);
+      });
+      ctx.stroke();
+      // stelle della figura che si accendono
+      ctx.fillStyle = "rgba(255,236,205," + (0.95 * g).toFixed(3) + ")";
+      p.pts.forEach(function (sg) {
+        [sg[0], sg[1]].forEach(function (q) { ctx.beginPath(); ctx.arc(q.x, q.y, 1.6 + 0.6 * g, 0, 6.2832); ctx.fill(); });
+      });
+      ctx.restore();
+      // nome della costellazione
+      ctx.save();
+      ctx.font = "300 " + Math.max(10, Math.round(H * 0.013)) + "px Inter, sans-serif";
+      if ("letterSpacing" in ctx) ctx.letterSpacing = "0.32em";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "rgba(226,200,156," + (0.8 * g).toFixed(3) + ")";
+      // il nome sopra la figura (sotto c'è l'eclissi), oppure sotto se la figura tocca il bordo alto
+      var ly = p.top > H * 0.18 ? p.top - H * 0.025 : Math.min(H * 0.45, p.bottom + H * 0.04);
+      ctx.fillText(p.name, Math.min(W * 0.92, Math.max(W * 0.08, p.cx)), ly);
+      ctx.restore();
     });
 
     if (!reduce && visible) requestAnimationFrame(draw);
